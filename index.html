@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome to Narragansett</title>
+        
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <style>
+            #map { position:absolute; top:0; bottom:0; width:100%; }
+        </style>
+    </head>
+    <body>
+        <div id='map'></div>
+        <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/leaflet.locatecontrol@0.72.0/dist/L.Control.Locate.min.js" charset="utf-8"></script>
+        <script src="map.js"></script>
+        <script>
+            var map = L.map('map').setView([41.424766944339694,-71.4623898267746], 15);
+            L.control.locate().addTo(map);
+
+            L.tileLayer('https://api.mapbox.com/styles/v1/sedonachamber/cin2opt8d00b9abnq6trki27e/tiles/{z}/{x}/{y}?access_token=pk.eyJ1Ijoic2Vkb25hY2hhbWJlciIsImEiOiJjaW13Zmp3cGswMzd0d2tsdXBnYmVjNmRjIn0.PlcjviLrxQht-_tBEbQQeg').addTo(map);
+
+            (new L.GeoJSON(gl, {
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup('<h1>'+feature.properties.title+'</h1>');
+                  },
+                pointToLayer: function(f, latlon) {
+                    var sizes = {
+                      small: [20, 50],
+                      medium: [30, 70],
+                      large: [35, 90]
+                    };
+
+                    var fp = f.properties || {};
+                    var size = fp['marker-size'] || 'medium';
+                    var symbol = (fp['marker-symbol']) ? '-' + fp['marker-symbol'] : '';
+                    var color = fp['marker-color'] || '7e7e7e';
+                    color = color.replace('#', '');
+
+                    var url = 'http://a.tiles.mapbox.com/v3/marker/' +
+                          'pin-' +
+                          // Internet Explorer does not support the `size[0]` syntax.
+                          size.charAt(0) + symbol + '+' + color +
+                          ((window.devicePixelRatio === 2) ? '@2x' : '') +
+                          '.png';
+
+                    return new L.Marker(latlon, {
+                        icon: new L.icon({
+                            iconUrl: url,
+                            iconSize: sizes[size],
+                            iconAnchor: [sizes[size][0] / 2, sizes[size][1] / 2],
+                            popupAnchor: [sizes[size][0] / 2, 0]
+                        })
+                    });
+                }
+            })).addTo(map);
+        </script>
+    </body>
+</html>
